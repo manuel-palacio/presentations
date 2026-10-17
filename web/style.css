@@ -1,0 +1,24 @@
+:root {
+  --ink: #14202b; --sea: #1f5a7a; --sand: #e9dcc4; --paper: #f7f2e8; --sun: #e8a33d; --muted: #5d6b75;
+  --bg: var(--paper); --text: var(--ink); --panel: #fffaf0; --line: #e4d8c3;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f1820; --text: #f1e9da; --panel: #16222c; --line: #26343f; --muted: #9aa8b2; --sea: #8cc3e0; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 Inter, system-ui, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 40px 16px 64px; }
+header .eyebrow { letter-spacing: .3em; text-transform: uppercase; font-size: 13px; color: var(--sea); font-weight: 500; }
+h1 { font: 600 clamp(40px, 7vw, 76px)/1.02 "Cormorant Garamond", serif; margin: 8px 0 4px; }
+.subtitle { font: italic 500 clamp(22px, 3vw, 30px) "Cormorant Garamond", serif; color: var(--muted); margin: 0 0 28px; }
+.player { border-radius: 10px; overflow: hidden; box-shadow: 0 24px 60px rgba(20, 32, 43, .25); background: #000; }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 8px; }
+.chapters button { font: 500 14px Inter, sans-serif; border: 1px solid var(--line); background: var(--panel); color: var(--text);
+  border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+.chapters button.active { background: var(--sun); border-color: var(--sun); color: #14202b; }
+.actions { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin: 18px 0 40px; }
+.actions a { color: var(--sea); font-weight: 500; }
+section h2 { font: 600 30px "Cormorant Garamond", serif; margin: 0 0 10px; }
+.credits { columns: 2 320px; font-size: 14px; color: var(--muted); padding-left: 18px; }
+.credits a { color: inherit; }
+footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
