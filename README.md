@@ -1,18 +1,15 @@
-# Joaquín Sorolla: The Painter of Light
+# Presentations
 
-An animated presentation about the Spanish painter Joaquín Sorolla (1863–1923), made with
-[Remotion](https://www.remotion.dev/). Live at https://sorolla-painter-of-light.fly.dev/
+Animated presentations made with [Remotion](https://www.remotion.dev/), one per folder. Each folder is
+a self-contained project (its own `package.json`, Remotion composition, web player page and Fly.io app).
 
-- `src/slides.ts`: slide content and timing (shared by the video and the web page)
-- `src/Presentation.tsx`: the Remotion composition (10 slides + credits, 1920×1080, 30 fps)
-- `web/`: the page with the interactive Remotion Player, chapter buttons and MP4 download
-- `public/img/`: paintings from Wikimedia Commons (public domain or CC0), credits in `credits.json`
+| Folder | Subject | Live |
+|---|---|---|
+| [`sorolla/`](sorolla/) | Joaquín Sorolla, the painter of light (1863–1923) | https://sorolla-painter-of-light.fly.dev/ |
 
-```sh
-npm install
-npm run studio     # edit in Remotion Studio
-npm run render     # out/sorolla.mp4
-npm run still      # out/poster.jpg
-npm run build      # dist/ (web page + MP4 + poster)
-fly deploy --ha=false --remote-only
-```
+## Adding a presentation
+
+1. Create a new folder next to `sorolla/` (copying `sorolla/` is the quickest start).
+2. Edit its `src/slides.ts`, assets in `public/`, and the app name in `fly.toml`.
+3. `npm install && npm run render && npm run still && npm run build && fly deploy --ha=false --remote-only`
+4. Add a row to the table above.
