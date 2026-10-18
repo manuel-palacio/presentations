@@ -148,8 +148,8 @@ const CreditsSlide: React.FC = () => (
     <div style={{ ...useEnter(28), fontFamily: sans, fontSize: 24, color: C.sand, marginTop: 60, maxWidth: 1300, lineHeight: 1.6 }}>
       {`All ${Object.keys(credits).length} images: Wikimedia Commons, public domain or CC0. Made with Remotion.`}
     </div>
-    <div style={{ ...useEnter(40), fontFamily: sans, fontSize: 24, color: C.sand, marginTop: 14, lineHeight: 1.6 }}>
-      {`Music: ${MUSIC.title}, ${MUSIC.composer}, performed by the ${MUSIC.performer} (public domain).`}
+    <div style={{ ...useEnter(40), fontFamily: sans, fontSize: 24, color: C.sand, marginTop: 14, maxWidth: 1100, lineHeight: 1.6 }}>
+      {`Music: ${MUSIC.title} by ${MUSIC.composer}, ${MUSIC.arrangement}, performed by ${MUSIC.performer} (public domain).`}
     </div>
   </AbsoluteFill>
 );

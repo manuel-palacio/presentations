@@ -119,10 +119,11 @@ export const slideStarts = (): number[] => {
 export const TOTAL_FRAMES = SLIDES.reduce((sum, s) => sum + slideFrames(s), 0) - TRANSITION * (SLIDES.length - 1);
 
 export const MUSIC = {
-  src: "audio/goyescas.m4a",
-  title: "Intermezzo from Goyescas",
-  composer: "Enrique Granados (1867–1916)",
-  performer: "United States Marine Band",
+  src: "audio/leyenda.m4a",
+  title: "Leyenda (Asturias)",
+  composer: "Isaac Albéniz (1860–1909)",
+  performer: "Michael Laucke, a pupil of Andrés Segovia",
+  arrangement: "arranged for guitar, castanets and bass",
   license: "Public domain",
-  page: "https://commons.wikimedia.org/wiki/File:Intermezzo_from_Goyescas_-_U.S._Marine_Band.ogg",
+  page: "https://commons.wikimedia.org/wiki/File:Legend_(Leyenda)_performed_by_Michael_Laucke.flac",
 };

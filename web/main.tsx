@@ -50,8 +50,8 @@ const App: React.FC = () => {
       <section>
         <h2>Music</h2>
         <p className="credits-line">
-          <a href={MUSIC.page} target="_blank" rel="noreferrer">{MUSIC.title}</a>, by {MUSIC.composer}, performed by
-          the {MUSIC.performer} · {MUSIC.license}
+          <a href={MUSIC.page} target="_blank" rel="noreferrer">{MUSIC.title}</a> by {MUSIC.composer}, {MUSIC.arrangement},
+          performed by {MUSIC.performer} · {MUSIC.license}
         </p>
         <h2>Image credits</h2>
         <ul className="credits">
