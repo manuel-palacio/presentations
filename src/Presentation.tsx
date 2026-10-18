@@ -1,13 +1,13 @@
 import React from "react";
 import {
-  AbsoluteFill, Easing, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig,
+  AbsoluteFill, Audio, Easing, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig,
 } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { loadFont as loadSerif } from "@remotion/google-fonts/CormorantGaramond";
 import { loadFont as loadSans } from "@remotion/google-fonts/Inter";
 import credits from "../public/img/credits.json";
-import { Painting, SLIDES, Slide, TRANSITION, slideFrames } from "./slides";
+import { FPS, MUSIC, Painting, SLIDES, Slide, TOTAL_FRAMES, TRANSITION, slideFrames } from "./slides";
 
 const { fontFamily: serif } = loadSerif("normal", { weights: ["500", "600"], subsets: ["latin", "latin-ext"] });
 const { fontFamily: sans } = loadSans("normal", { weights: ["400", "500"], subsets: ["latin", "latin-ext"] });
@@ -148,6 +148,9 @@ const CreditsSlide: React.FC = () => (
     <div style={{ ...useEnter(28), fontFamily: sans, fontSize: 24, color: C.sand, marginTop: 60, maxWidth: 1300, lineHeight: 1.6 }}>
       {`All ${Object.keys(credits).length} images: Wikimedia Commons, public domain or CC0. Made with Remotion.`}
     </div>
+    <div style={{ ...useEnter(40), fontFamily: sans, fontSize: 24, color: C.sand, marginTop: 14, lineHeight: 1.6 }}>
+      {`Music: ${MUSIC.title}, ${MUSIC.composer}, performed by the ${MUSIC.performer} (public domain).`}
+    </div>
   </AbsoluteFill>
 );
 
@@ -161,7 +164,20 @@ const renderSlide = (slide: Slide) => {
   }
 };
 
+/** Fade the music in over half a second and out over the last three seconds. */
+const musicVolume = (frame: number) =>
+  interpolate(frame, [0, FPS / 2, TOTAL_FRAMES - 3 * FPS, TOTAL_FRAMES], [0, 0.9, 0.9, 0], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp",
+  });
+
 export const Presentation: React.FC = () => (
+  <AbsoluteFill>
+    <Audio src={staticFile(MUSIC.src)} volume={musicVolume} />
+    <Slides />
+  </AbsoluteFill>
+);
+
+const Slides: React.FC = () => (
   <TransitionSeries>
     {SLIDES.flatMap((slide, i) => [
       ...(i > 0 ? [<TransitionSeries.Transition key={`${slide.id}-in`} presentation={fade()} timing={linearTiming({ durationInFrames: TRANSITION })} />] : []),

@@ -117,3 +117,12 @@ export const slideStarts = (): number[] => {
 };
 
 export const TOTAL_FRAMES = SLIDES.reduce((sum, s) => sum + slideFrames(s), 0) - TRANSITION * (SLIDES.length - 1);
+
+export const MUSIC = {
+  src: "audio/goyescas.m4a",
+  title: "Intermezzo from Goyescas",
+  composer: "Enrique Granados (1867–1916)",
+  performer: "United States Marine Band",
+  license: "Public domain",
+  page: "https://commons.wikimedia.org/wiki/File:Intermezzo_from_Goyescas_-_U.S._Marine_Band.ogg",
+};

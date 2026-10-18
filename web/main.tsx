@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Player, PlayerRef } from "@remotion/player";
 import { Presentation } from "../src/Presentation";
-import { FPS, SLIDES, TOTAL_FRAMES, slideStarts } from "../src/slides";
+import { FPS, MUSIC, SLIDES, TOTAL_FRAMES, slideStarts } from "../src/slides";
 import credits from "../public/img/credits.json";
 import "./style.css";
 
@@ -48,6 +48,11 @@ const App: React.FC = () => {
         <a href="https://en.wikipedia.org/wiki/Joaqu%C3%ADn_Sorolla" target="_blank" rel="noreferrer">Read more on Wikipedia</a>
       </div>
       <section>
+        <h2>Music</h2>
+        <p className="credits-line">
+          <a href={MUSIC.page} target="_blank" rel="noreferrer">{MUSIC.title}</a>, by {MUSIC.composer}, performed by
+          the {MUSIC.performer} · {MUSIC.license}
+        </p>
         <h2>Image credits</h2>
         <ul className="credits">
           {Object.values(credits).map((c) => (

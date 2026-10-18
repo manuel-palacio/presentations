@@ -22,3 +22,5 @@ section h2 { font: 600 30px "Cormorant Garamond", serif; margin: 0 0 10px; }
 .credits { columns: 2 320px; font-size: 14px; color: var(--muted); padding-left: 18px; }
 .credits a { color: inherit; }
 footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
+.credits-line { font-size: 14px; color: var(--muted); margin: 0 0 28px; }
+.credits-line a { color: inherit; }
