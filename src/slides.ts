@@ -119,11 +119,11 @@ export const slideStarts = (): number[] => {
 export const TOTAL_FRAMES = SLIDES.reduce((sum, s) => sum + slideFrames(s), 0) - TRANSITION * (SLIDES.length - 1);
 
 export const MUSIC = {
-  src: "audio/leyenda.m4a",
-  title: "Leyenda (Asturias)",
-  composer: "Isaac Albéniz (1860–1909)",
-  performer: "Michael Laucke, a pupil of Andrés Segovia",
-  arrangement: "arranged for guitar, castanets and bass",
+  src: "audio/andaluza.m4a",
+  title: "Danza española No. 5 \u201cAndaluza\u201d",
+  composer: "Enrique Granados (1867–1916)",
+  performer: "Sharon Isbin at the White House, 2009",
+  arrangement: "for solo guitar, a staple of Andrés Segovia\u2019s repertoire",
   license: "Public domain",
-  page: "https://commons.wikimedia.org/wiki/File:Legend_(Leyenda)_performed_by_Michael_Laucke.flac",
+  page: "https://commons.wikimedia.org/wiki/File:20091104_Sharon_Isbin_-_Enrique_Granados,_Spanish_Dance_number_5_of_12,_1890_edit_1.ogg",
 };

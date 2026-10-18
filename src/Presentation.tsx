@@ -166,7 +166,7 @@ const renderSlide = (slide: Slide) => {
 
 /** Fade the music in over half a second and out over the last three seconds. */
 const musicVolume = (frame: number) =>
-  interpolate(frame, [0, FPS / 2, TOTAL_FRAMES - 3 * FPS, TOTAL_FRAMES], [0, 0.9, 0.9, 0], {
+  interpolate(frame, [0, FPS / 2, TOTAL_FRAMES - 3 * FPS, TOTAL_FRAMES], [0, 0.8, 0.8, 0], {
     extrapolateLeft: "clamp", extrapolateRight: "clamp",
   });
 
