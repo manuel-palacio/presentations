@@ -38,7 +38,6 @@ const App: React.FC = () => {
   };
 
   const active = STARTS.reduce((found, start, i) => (frame >= start ? i : found), 0);
-  const seconds = Math.round(TOTAL_FRAMES / FPS);
 
   return (
     <main>
@@ -46,7 +45,7 @@ const App: React.FC = () => {
         <LangSwitch lang={lang} onChange={switchTo} />
         <div className="eyebrow">{t(META.places)}</div>
         <h1>{META.name}</h1>
-        <p className="subtitle">{t(META.tagline)}: {ui.duration(Math.floor(seconds / 60), seconds % 60)}</p>
+        <p className="subtitle">{t(META.tagline)}</p>
       </header>
       <div className="player">
         <Player ref={player} component={Presentation} inputProps={inputProps} durationInFrames={TOTAL_FRAMES} fps={FPS}

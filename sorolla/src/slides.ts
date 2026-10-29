@@ -203,7 +203,6 @@ const UI_EN = {
   imagesCredit: (n: number) => `All ${n} images: Wikimedia Commons, public domain or CC0. Made with Remotion.`,
   musicCredit: (lang: Lang) =>
     `Music: ${tr(MUSIC.title, lang)} by ${MUSIC.composer}, ${tr(MUSIC.arrangement, lang)}, performed by ${tr(MUSIC.performer, lang)} (${tr(MUSIC.license, lang).toLowerCase()}).`,
-  duration: (min: number, sec: number) => `a ${min} min ${sec} s presentation`,
   chapters: "Chapters",
   wikipedia: "Read more on Wikipedia",
   music: "Music",
@@ -220,7 +219,6 @@ export const UI: L<typeof UI_EN> = {
     imagesCredit: (n: number) => `Las ${n} imágenes: Wikimedia Commons, dominio público o CC0. Hecho con Remotion.`,
     musicCredit: (lang: Lang) =>
       `Música: ${tr(MUSIC.title, lang)}, de ${MUSIC.composer}, ${tr(MUSIC.arrangement, lang)}, interpretada por ${tr(MUSIC.performer, lang)} (${tr(MUSIC.license, lang).toLowerCase()}).`,
-    duration: (min: number, sec: number) => `una presentación de ${min} min ${sec} s`,
     chapters: "Capítulos",
     wikipedia: "Leer más en Wikipedia",
     music: "Música",
