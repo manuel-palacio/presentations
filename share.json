@@ -1,0 +1,21 @@
+{
+  "site": "https://palace-presentations.fly.dev",
+  "pages": {
+    "": {
+      "en": { "title": "Presentations", "description": "Animated presentations, made with Remotion.", "image": "sorolla/poster.jpg" },
+      "es": { "title": "Presentaciones", "description": "Presentaciones animadas, hechas con Remotion.", "image": "sorolla/poster-es.jpg" }
+    },
+    "sorolla": {
+      "en": { "title": "Joaquín Sorolla · The Painter of Light", "description": "An animated presentation about Joaquín Sorolla (1863–1923), the Valencian painter of light, sea and sun." },
+      "es": { "title": "Joaquín Sorolla · El pintor de la luz", "description": "Una presentación animada sobre Joaquín Sorolla (1863–1923), el pintor valenciano de la luz, el mar y el sol." }
+    },
+    "velazquez": {
+      "en": { "title": "Diego Velázquez · The Painter of Painters", "description": "An animated presentation about Diego Velázquez (1599–1660), painter to Philip IV and author of Las Meninas." },
+      "es": { "title": "Diego Velázquez · El pintor de pintores", "description": "Una presentación animada sobre Diego Velázquez (1599–1660), pintor de Felipe IV y autor de Las Meninas." }
+    },
+    "kundera": {
+      "en": { "title": "The Unbearable Lightness of Being · Milan Kundera", "description": "An animated presentation about Milan Kundera's novel The Unbearable Lightness of Being (1984)." },
+      "es": { "title": "La insoportable levedad del ser · Milan Kundera", "description": "Una presentación animada sobre la novela de Milan Kundera La insoportable levedad del ser (1984)." }
+    }
+  }
+}

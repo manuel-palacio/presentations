@@ -26,6 +26,12 @@ per-presentation apps were deleted on 2026-10-29). `./build-site.sh` builds ever
 assembles `_site/`; the root `Dockerfile` serves it with
 nginx (`nginx.conf`). Then `fly deploy --ha=false --remote-only` from the repo root.
 
+## Link previews
+
+Shared links preview in the link's language: `share_meta.py` (run by `build-site.sh`) writes each page as
+`index.html` (English) and `index.es.html` (Spanish) with its own title, description and poster from `share.json`, and
+nginx serves the Spanish one for `?lang=es`. So `https://palace-presentations.fly.dev/kundera/?lang=es` previews in Spanish.
+
 ## Adding a presentation
 
 1. Create a new folder next to the others (copying `velazquez/` is the quickest start: its name, dates and
@@ -34,4 +40,5 @@ nginx (`nginx.conf`). Then `fly deploy --ha=false --remote-only` from the repo r
 3. In the folder: `npm install && npm run render && npm run still`.
 4. Add a card for it to `home/index.html` (the link is the folder name; texts in `data-en`/`data-es`) and a row to the
    table above.
-5. `./build-site.sh && fly deploy --ha=false --remote-only` from the repo root.
+5. Add its link-preview title and description in English and Spanish to `share.json`.
+6. `./build-site.sh && fly deploy --ha=false --remote-only` from the repo root.

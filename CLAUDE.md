@@ -20,6 +20,9 @@ is the authority on content: use its text, do not invent facts. Keep a copy as `
   text per language in the slides file, identical timing in both, an `EN | ES` switch on the page, and posters for
   both (`out/poster.jpg`, `out/poster-es.jpg`, made by `npm run still`). A new presentation needs both languages and a
   bilingual card on the home page.
+- Link previews: crawlers don't run JavaScript, so `share_meta.py` (run by `build-site.sh`) writes each page twice,
+  `index.html` (English) and `index.es.html` (Spanish), with title, description, Open Graph/Twitter tags and an absolute
+  poster URL; nginx serves the Spanish one for `?lang=es`. A new presentation needs its texts in `share.json`.
 - No voiceover: narration is shown as timed subtitles. Music is public domain or CC from Wikimedia Commons, verified on
   its file page and credited in `MUSIC` and on the page.
 - No video download: `npm run build` publishes the web player, assets and both posters only; the MP4 stays in `out/`.
