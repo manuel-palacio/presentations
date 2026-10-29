@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Player, PlayerRef } from "@remotion/player";
 import { Presentation } from "../src/Presentation";
-import { FPS, META, MUSIC, SCENES, TOTAL_FRAMES, sceneStarts } from "../src/slides";
+import { FPS, Lang, META, MUSIC, SCENES, TOTAL_FRAMES, UI, sceneStarts, tr } from "../src/slides";
+import { LangSwitch, chooseLang, initialLang, showLang } from "./lang";
 import "./style.css";
 
 // staticFile() resolves to /audio/... from the site root; serve it from this page's own folder
@@ -15,6 +16,10 @@ const STARTS = sceneStarts();
 const App: React.FC = () => {
   const player = useRef<PlayerRef>(null);
   const [frame, setFrame] = useState(0);
+  const [lang, setLang] = useState<Lang>(initialLang);
+  const t = (text: Parameters<typeof tr>[0]) => tr(text, lang);
+  const ui = UI[lang];
+  const inputProps = useMemo(() => ({ lang }), [lang]);
 
   useEffect(() => {
     const current = player.current;
@@ -24,46 +29,54 @@ const App: React.FC = () => {
     return () => current.removeEventListener("frameupdate", onFrame);
   }, []);
 
+  useEffect(() => showLang(lang, `${t(META.name)} · ${META.author}`), [lang]);
+
+  const switchTo = (next: Lang) => {
+    chooseLang(next);
+    setLang(next);
+  };
+
   const active = STARTS.reduce((found, start, i) => (frame >= start ? i : found), 0);
   const seconds = Math.round(TOTAL_FRAMES / FPS);
 
   return (
     <main>
       <header>
-        <div className="eyebrow">{META.eyebrow}</div>
-        <h1>{META.name}</h1>
-        <p className="subtitle">{META.tagline}: a {Math.floor(seconds / 60)} min {seconds % 60} s presentation</p>
+        <LangSwitch lang={lang} onChange={switchTo} />
+        <div className="eyebrow">{t(META.eyebrow)}</div>
+        <h1>{t(META.name)}</h1>
+        <p className="subtitle">{t(META.tagline)}: {ui.duration(Math.floor(seconds / 60), seconds % 60)}</p>
       </header>
       <div className="player">
-        <Player ref={player} component={Presentation} durationInFrames={TOTAL_FRAMES} fps={FPS}
+        <Player ref={player} component={Presentation} inputProps={inputProps} durationInFrames={TOTAL_FRAMES} fps={FPS}
           compositionWidth={1920} compositionHeight={1080} style={{ width: "100%" }}
           controls allowFullscreen clickToPlay doubleClickToFullscreen acknowledgeRemotionLicense />
       </div>
-      <nav className="chapters" aria-label="Chapters">
+      <nav className="chapters" aria-label={ui.chapters}>
         {SCENES.map((scene, i) => (
           <button key={scene.id} className={i === active ? "active" : ""}
             onClick={() => { player.current?.seekTo(STARTS[i] + 1); player.current?.play(); }}>
-            {scene.chapter}
+            {t(scene.chapter)}
           </button>
         ))}
       </nav>
       <div className="actions">
-        <a href={META.wikipedia} target="_blank" rel="noreferrer">Read more on Wikipedia</a>
-        <a href={META.source.url} target="_blank" rel="noreferrer">Watch the original analysis</a>
+        <a href={t(META.wikipedia)} hrefLang={lang} target="_blank" rel="noreferrer">{ui.wikipedia}</a>
+        <a href={META.source.url} hrefLang="es" target="_blank" rel="noreferrer">{ui.watchSource}</a>
       </div>
       <section>
-        <h2>Source</h2>
+        <h2>{ui.source}</h2>
         <p className="credits-line">
-          Based on the analysis <a href={META.source.url} target="_blank" rel="noreferrer">{META.source.title}</a> by{" "}
-          <em>{META.source.channel}</em> ({META.source.host}). There is no voiceover: the narration runs as subtitles.
+          {ui.sourcePrefix} <a href={META.source.url} hrefLang="es" target="_blank" rel="noreferrer">{META.source.title}</a> {ui.by}{" "}
+          <em>{META.source.channel}</em> ({META.source.host}). {ui.noVoice}
         </p>
-        <h2>Music</h2>
+        <h2>{ui.music}</h2>
         <p className="credits-line">
-          <a href={MUSIC.page} target="_blank" rel="noreferrer">{MUSIC.title}</a> by {MUSIC.composer}, {MUSIC.arrangement},
-          performed by {MUSIC.performer} · {MUSIC.license}
+          <a href={MUSIC.page} target="_blank" rel="noreferrer">{t(MUSIC.title)}</a> {ui.by} {MUSIC.composer}, {t(MUSIC.arrangement)},{" "}
+          {ui.performedBy} {MUSIC.performer} · {t(MUSIC.license)}
         </p>
       </section>
-      <footer>Made with Remotion. All illustrations are drawn in code; no film stills or photographs.</footer>
+      <footer>{ui.footer}</footer>
     </main>
   );
 };

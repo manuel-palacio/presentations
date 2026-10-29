@@ -7,9 +7,9 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts Presentation out/presentation.mp4",
-    "still": "remotion still src/index.ts Presentation out/poster.jpg --frame=338",
+    "still": "remotion still src/index.ts Presentation out/poster.jpg --frame=338 && remotion still src/index.ts Presentation out/poster-es.jpg --frame=338 --props='{\"lang\":\"es\"}'",
     "dev": "vite",
-    "build": "vite build && mkdir -p dist && cp out/poster.jpg dist/",
+    "build": "vite build && mkdir -p dist && cp out/poster.jpg out/poster-es.jpg dist/",
     "preview": "vite preview"
   },
   "dependencies": {

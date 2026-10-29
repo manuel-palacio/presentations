@@ -1,8 +1,9 @@
-import React from "react";
+import React, { createContext, useContext } from "react";
 import { AbsoluteFill, interpolate, random, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { loadFont as loadSerif } from "@remotion/google-fonts/PlayfairDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/Inter";
-import { Subtitle } from "./slides";
+import { Lang, Subtitle, cue, sceneById } from "./slides";
+import { TEXT } from "./text";
 
 const { fontFamily: serif } = loadSerif("normal", { weights: ["400", "700"], subsets: ["latin", "latin-ext"] });
 loadSerif("italic", { weights: ["400"], subsets: ["latin", "latin-ext"] });
@@ -13,6 +14,17 @@ export { serif, sans };
 export const C = {
   bg: "#14110F", paper: "#EFE6D8", red: "#B3261E", blue: "#4A6178", gold: "#C9A24A",
   card: "#1E1A17", line: "rgba(239,230,216,0.16)", dim: "rgba(239,230,216,0.66)", grey: "#8a8279", inkDim: "#5b5149",
+};
+
+/** The composition's language, set once by <Presentation lang>. */
+export const LangContext = createContext<Lang>("en");
+export const useLang = () => useContext(LangContext);
+/** The words drawn in the scenes, in the composition's language. */
+export const useText = () => TEXT[useLang()];
+/** `at(sceneId, phrase)`: the frame at which the phrase is reached in that scene's narration, in this language. */
+export const useAt = () => {
+  const lang = useLang();
+  return (id: string, phrase: string) => cue(sceneById(id), phrase, lang);
 };
 
 export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;

@@ -2,13 +2,12 @@
 // `cue()` finds when a phrase is reached in the narration, so visuals land with their subtitles.
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { Beat, C, Eyebrow, Rich, clamp, fadeBetween, sans, serif, useSpring } from "./ui";
+import { Beat, C, Eyebrow, Rich, clamp, fadeBetween, sans, serif, useAt, useLang, useSpring, useText } from "./ui";
 import {
   Bust, BookIcon, Clock, Dog, Feather, FilmIcon, Figure, LoopArrow, MAP_SIZE, Stone, borderPath, project,
 } from "./art";
-import { META, Divider, contentFrames, cue, sceneById } from "./slides";
+import { META, UI, contentFrames, sceneById } from "./slides";
 
-const at = (id: string, phrase: string) => cue(sceneById(id), phrase);
 const length = (id: string) => contentFrames(sceneById(id));
 
 const body: React.CSSProperties = { fontFamily: sans, fontSize: 38, lineHeight: 1.4, color: C.paper };
@@ -29,7 +28,8 @@ const Sequenced: React.FC<{ beats: { from: number; node: React.ReactNode }[]; en
 
 // ---- Section divider ------------------------------------------------------------------------------------
 
-export const DividerCard: React.FC<Divider> = ({ numeral, title, spoiler }) => {
+export const DividerCard: React.FC<{ numeral: string; title: string; spoiler?: boolean }> = ({ numeral, title, spoiler }) => {
+  const t = useText();
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const opacity = fadeBetween(frame, 0, durationInFrames, 15);
@@ -49,7 +49,7 @@ export const DividerCard: React.FC<Divider> = ({ numeral, title, spoiler }) => {
           letterSpacing: 4, textTransform: "uppercase", color: C.red, border: `2px solid ${C.red}`, borderRadius: 999, padding: "8px 22px" }}>
           <svg width={28} height={26} viewBox="0 0 28 26"><path d="M14 2 L 26 24 L 2 24 Z" fill="none" stroke={C.red} strokeWidth={2.5} strokeLinejoin="round" />
             <path d="M14 10 L 14 16" stroke={C.red} strokeWidth={2.5} strokeLinecap="round" /><circle cx={14} cy={20} r={1.6} fill={C.red} /></svg>
-          spoilers
+          {t.spoilers}
         </div>
       ) : null}
     </AbsoluteFill>
@@ -65,8 +65,9 @@ function useEnterStyle(delay: number): React.CSSProperties {
 
 export const Intro: React.FC = () => {
   const frame = useCurrentFrame();
+  const lang = useLang();
   const baseline = 742;
-  const lines = ["The Unbearable", "Lightness of Being"];
+  const lines = useText().intro.lines;
   let index = 0;
 
   // The feather drifts down the right side, then glides in to settle on the baseline.
@@ -104,7 +105,7 @@ export const Intro: React.FC = () => {
         {`${META.author}, ${META.year}`}
       </Beat>
       <Beat from={200} style={{ position: "absolute", top: 596, width: "100%", textAlign: "center", fontFamily: serif, fontStyle: "italic", fontSize: 34, color: C.dim }}>
-        {META.tagline}
+        {META.tagline[lang]}
       </Beat>
     </AbsoluteFill>
   );
@@ -112,20 +113,13 @@ export const Intro: React.FC = () => {
 
 // ---- 2 · hook ---------------------------------------------------------------------------------------------
 
-const HOOK = [
-  "Decisions we can never correct",
-  "The traps of love",
-  "Not understanding those closest to us",
-  "The lies we decorate our lives with",
-  "The real nature of happiness",
-];
-
 export const Hook: React.FC = () => {
   const frame = useCurrentFrame();
+  const t = useText().hook;
   return (
     <AbsoluteFill style={{ backgroundColor: C.paper }}>
-      <Eyebrow color={C.red} style={{ position: "absolute", left: 300, top: 92 }}>Why this novel unsettles us</Eyebrow>
-      {HOOK.map((line, i) => {
+      <Eyebrow color={C.red} style={{ position: "absolute", left: 300, top: 92 }}>{t.eyebrow}</Eyebrow>
+      {t.lines.map((line, i) => {
         const from = 24 + i * 96;
         const underline = interpolate(frame, [from + 18, from + 50], [0, 1], { ...clamp, easing: Easing.inOut(Easing.ease) });
         return (
@@ -144,16 +138,19 @@ export const Hook: React.FC = () => {
 // ---- 3 · characters ---------------------------------------------------------------------------------------
 
 const CHARACTERS = [
-  { name: "Tomás", line: "surgeon who can't give up his lovers", cue: "surgeon", color: C.paper, left: 330, top: 110 },
-  { name: "Teresa", line: "loves so much she becomes sick with jealousy", cue: "woman", color: C.red, left: 1030, top: 110 },
-  { name: "Sabina", line: "painter who confuses freedom with permanent escape", cue: "artist", color: C.gold, left: 330, top: 480 },
-  { name: "Franz", line: "intellectual who turns every feeling into a grand cause", cue: "intellectual", color: C.blue, left: 1030, top: 480 },
+  { name: "Tomás", color: C.paper, left: 330, top: 110 },
+  { name: "Teresa", color: C.red, left: 1030, top: 110 },
+  { name: "Sabina", color: C.gold, left: 330, top: 480 },
+  { name: "Franz", color: C.blue, left: 1030, top: 480 },
 ];
 
 export const Characters: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const linesFrom = at("characters", "intellectual") + 70;
+  const at = useAt();
+  const cards = useText().characters.cards;
+  const characters = CHARACTERS.map((c, i) => ({ ...c, ...cards[i] }));
+  const linesFrom = at("characters", cards[3].cue) + 70;
   const draw = (delay: number) => interpolate(frame, [linesFrom + delay, linesFrom + delay + 30], [0, 1], { ...clamp, easing: Easing.inOut(Easing.ease) });
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
@@ -161,7 +158,7 @@ export const Characters: React.FC = () => {
       <div style={{ position: "absolute", left: 890, top: 241, width: 140 * draw(0), height: 9, backgroundColor: C.red, borderRadius: 5 }} />
       <div style={{ position: "absolute", left: 609, top: 380, width: 3, height: 100 * draw(14), backgroundColor: C.red }} />
       <div style={{ position: "absolute", left: 890, top: 612, width: 140 * draw(28), height: 4, backgroundColor: C.blue, borderRadius: 2 }} />
-      {CHARACTERS.map((c, i) => {
+      {characters.map((c, i) => {
         const from = at("characters", c.cue) - 6;
         const flip = spring({ frame: frame - from, fps, config: { damping: 200 }, durationInFrames: 30 });
         return (
@@ -184,18 +181,10 @@ export const Characters: React.FC = () => {
 
 // ---- 4 · plot ---------------------------------------------------------------------------------------------
 
-const PLOT = [
-  { title: "1960s Prague", line: "Tomás, divorced, free, many lovers", cue: "Prague, the" },
-  { title: "A provincial town", line: "he meets Teresa, a waitress", cue: "Then he meets" },
-  { title: "Prague", line: "she arrives with a suitcase; he falls in love", cue: "suitcase," },
-  { title: "Infidelity", line: "affairs continue (Sabina); Teresa's jealousy", cue: "other women" },
-  { title: "August 1968", line: "Soviet tanks", cue: "August 1968" },
-  { title: "Switzerland", line: "exile, which solves nothing", cue: "flee to" },
-  { title: "Karenin", line: "the dog who teaches what the humans can't learn", cue: "a dog" },
-];
-
 export const Plot: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const { eyebrow, items: PLOT } = useText().plot;
   const y = 440;
   const xs = PLOT.map((_, i) => 170 + i * 263);
   const cues = PLOT.map((p) => at("plot", p.cue));
@@ -206,7 +195,7 @@ export const Plot: React.FC = () => {
   const total = 1700;
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
-      <Eyebrow style={{ position: "absolute", left: 110, top: 86 }}>The story</Eyebrow>
+      <Eyebrow style={{ position: "absolute", left: 110, top: 86 }}>{eyebrow}</Eyebrow>
       <svg width={1920} height={1080} style={{ position: "absolute" }}>
         <line x1={110} y1={y} x2={1810} y2={y} stroke={C.paper} strokeOpacity={0.75} strokeWidth={3}
           strokeDasharray={total} strokeDashoffset={total - (head - 110)} />
@@ -242,16 +231,6 @@ export const Plot: React.FC = () => {
 };
 
 // ---- 5 · author -------------------------------------------------------------------------------------------
-
-const AUTHOR = [
-  { mark: "1929", text: "Born **1 April 1929**, Brno, Czechoslovakia (April Fools' Day)", cue: "born" },
-  { mark: "♪", text: "Father: a renowned **pianist**, so his novels are structured like music", cue: "pianist," },
-  { mark: "1950s–70", text: "Communist Party: joined → expelled (1950s) → readmitted → expelled for good (1970)", cue: "He lived both" },
-  { mark: "1975–79", text: "**1975** moves to France · **1979** Czech citizenship revoked · becomes French", cue: "exile in France" },
-  { mark: "", text: "Very private, avoided interviews", cue: "" },
-  { mark: "", text: "Distrusted absolute certainties", cue: "" },
-  { mark: "2023", text: "Died in **Paris, 2023**, aged 94", cue: "He died" },
-];
 
 /** Faint musical staves; the same three-note figure appears, vanishes and returns elsewhere. */
 const Staves: React.FC = () => {
@@ -290,11 +269,13 @@ const Staves: React.FC = () => {
 
 export const Author: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const { items: AUTHOR, france: franceCue, died: diedCue } = useText().author;
   const top = 236;
   const step = 92;
   const lineHeight = interpolate(frame, [10, 120], [0, step * (AUTHOR.length - 1)], { ...clamp, easing: Easing.inOut(Easing.ease) });
-  const died = at("author", "He died");
-  const france = at("author", "exile in France");
+  const died = at("author", diedCue);
+  const france = at("author", franceCue);
   // The two traits are not narrated: they arrive between "France" and "died".
   const cues = AUTHOR.map((a, i) => (a.cue ? at("author", a.cue) : Math.round(france + ((died - france) * (i - 3)) / 3)));
   return (
@@ -318,14 +299,6 @@ export const Author: React.FC = () => {
 
 // ---- 6 · context ------------------------------------------------------------------------------------------
 
-const CONTEXT = [
-  { text: "**Prague Spring (1968):** reforms, more civil liberties, less censorship, hope", cue: "In early 1968" },
-  { text: "**20–21 August 1968:** Warsaw Pact invasion", cue: "invaded." },
-  { text: "**\"Normalization\":** party control restored, censorship, reformers purged from their professions", cue: "normalization." },
-  { text: "Novel written in exile; published **1984 in French**, **1985 in Czech** (exile publisher, Toronto)", cue: "wrote the novel" },
-  { text: "Key question: *How much of our life is really ours?*", cue: "Its question" },
-];
-
 /** Invasion arrows: from East Germany, Poland, the USSR and Hungary towards the interior. */
 const ARROWS: { from: [number, number]; to: [number, number] }[] = [
   { from: [12.3, 51.4], to: [13.8, 50.4] },
@@ -338,9 +311,11 @@ const ARROWS: { from: [number, number]; to: [number, number] }[] = [
 
 export const Context: React.FC = () => {
   const frame = useCurrentFrame();
-  const invaded = at("context", "invaded.") - 6;
-  const press = at("context", "Newspapers");
-  const stamp = at("context", "normalization.");
+  const at = useAt();
+  const t = useText().context;
+  const invaded = at("context", t.cues.invaded) - 6;
+  const press = at("context", t.cues.press);
+  const stamp = at("context", t.cues.stamp);
   const shake = frame >= invaded && frame < invaded + 14 ? Math.sin(frame * 2.7) * 6 * (1 - (frame - invaded) / 14) : 0;
   const stampScale = interpolate(frame, [stamp, stamp + 7], [2.4, 1], { ...clamp, easing: Easing.in(Easing.quad) });
   const prague = project(14.42, 50.08);
@@ -354,11 +329,11 @@ export const Context: React.FC = () => {
           <svg width={MAP_SIZE.width} height={MAP_SIZE.height} style={{ overflow: "visible" }}>
             <path d={borderPath()} fill="#e6d3b0" stroke="#5b4630" strokeWidth={3} strokeLinejoin="round" />
             <circle cx={prague[0]} cy={prague[1]} r={8} fill="#5b4630" />
-            <text x={prague[0] + 16} y={prague[1] + 8} fontFamily={serif} fontStyle="italic" fontSize={28} fill="#3d2e1f">Prague</text>
+            <text x={prague[0] + 16} y={prague[1] + 8} fontFamily={serif} fontStyle="italic" fontSize={28} fill="#3d2e1f">{t.prague}</text>
             <circle cx={bratislava[0]} cy={bratislava[1]} r={6} fill="#5b4630" />
-            <text x={bratislava[0] - 14} y={bratislava[1] - 6} textAnchor="end" fontFamily={serif} fontStyle="italic" fontSize={24} fill="#3d2e1f">Bratislava</text>
+            <text x={bratislava[0] - 14} y={bratislava[1] - 6} textAnchor="end" fontFamily={serif} fontStyle="italic" fontSize={24} fill="#3d2e1f">{t.bratislava}</text>
             <text x={project(15.6, 0)[0]} y={project(0, 49.45)[1]} textAnchor="middle" fontFamily={sans} fontSize={22} letterSpacing={6} fill="#6f5a40">
-              CZECHOSLOVAKIA
+              {t.country}
             </text>
             {ARROWS.map((a, i) => {
               const [x1, y1] = project(...a.from);
@@ -381,9 +356,9 @@ export const Context: React.FC = () => {
       <Beat from={press} style={{ position: "absolute", left: 160, top: 620, width: 780, height: 220, backgroundColor: "#e9e0cf",
         borderRadius: 4, padding: "18px 30px", boxSizing: "border-box", boxShadow: "0 16px 40px rgba(0,0,0,0.4)", transform: "rotate(-1.2deg)" }}>
         <div style={{ fontFamily: serif, fontSize: 20, letterSpacing: 6, color: "#4a4038", borderBottom: "2px solid #4a4038", paddingBottom: 6 }}>
-          PRAGUE · 1968
+          {t.dateline}
         </div>
-        <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 52, color: "#1d1915", marginTop: 8 }}>PRAGUE SPRING</div>
+        <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 52, color: "#1d1915", marginTop: 8 }}>{t.headline}</div>
         {[0, 1, 2].map((r) => (
           <div key={r} style={{ display: "flex", gap: 14, marginTop: 10 }}>
             {[0, 1, 2].map((c) => <div key={c} style={{ flex: 1, height: 8, backgroundColor: "#b9ae9c", borderRadius: 4, opacity: (r + c) % 3 === 2 ? 0.5 : 1 }} />)}
@@ -392,15 +367,15 @@ export const Context: React.FC = () => {
         {frame >= stamp ? (
           <div style={{ position: "absolute", left: 210, top: 60, transform: `rotate(-12deg) scale(${stampScale})`, opacity: interpolate(frame, [stamp, stamp + 4], [0, 0.92], clamp),
             border: `6px solid ${C.red}`, color: C.red, fontFamily: sans, fontWeight: 600, fontSize: 64, letterSpacing: 8, padding: "2px 22px", borderRadius: 8 }}>
-            CENSORED
+            {t.stamp}
           </div>
         ) : null}
       </Beat>
       <div style={{ position: "absolute", left: 1110, top: 110, width: 720 }}>
-        {CONTEXT.map((c) => (
+        {t.items.map((c) => (
           <Beat key={c.text} from={at("context", c.cue)} style={{ fontFamily: sans, fontSize: 30, lineHeight: 1.38, color: C.paper, marginBottom: 30,
-            paddingLeft: 24, borderLeft: `4px solid ${c.cue === "invaded." ? C.red : C.line}` }}>
-            <Rich text={c.text} boldColor={c.cue === "invaded." ? "#e0574c" : C.gold} />
+            paddingLeft: 24, borderLeft: `4px solid ${c.red ? C.red : C.line}` }}>
+            <Rich text={c.text} boldColor={c.red ? "#e0574c" : C.gold} />
           </Beat>
         ))}
       </div>
@@ -410,18 +385,16 @@ export const Context: React.FC = () => {
 
 // ---- 7 · influences ---------------------------------------------------------------------------------------
 
-const INFLUENCES = [
-  { title: "*Anna Karenina* (Tolstoy)", body: "love, infidelity, consequences; the dog is named after her", cue: "Anna Karenina", icon: "book" },
-  { title: "Nietzsche, eternal return", body: "what does a life that happens only once mean?", cue: "Nietzsche's", icon: "loop" },
-  { title: "*The Joke* · *The Book of Laughter and Forgetting*", body: "intimacy, history, memory, power", cue: "earlier work", icon: "books" },
-  { title: "Film (1988)", body: "Daniel Day-Lewis, Juliette Binoche. Good, but it loses the narrator who interrupts to make us think.", cue: "1988 film", icon: "film" },
-];
+const ICONS = ["book", "loop", "books", "film"];
 
 export const Influences: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const t = useText().influences;
+  const INFLUENCES = t.cards.map((card, i) => ({ ...card, icon: ICONS[i] }));
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
-      <Eyebrow style={{ position: "absolute", left: 110, top: 86 }}>In conversation with</Eyebrow>
+      <Eyebrow style={{ position: "absolute", left: 110, top: 86 }}>{t.eyebrow}</Eyebrow>
       {INFLUENCES.map((inf, i) => {
         const from = at("influences", inf.cue) - 4;
         return (
@@ -442,17 +415,10 @@ export const Influences: React.FC = () => {
 
 // ---- 8 · theme1: one life only ----------------------------------------------------------------------------
 
-const CHECKLIST = [
-  "Stop demanding guarantees from the future",
-  "Gather the information you have",
-  "Weigh likely consequences",
-  "Decide which values you're defending",
-  "Judge past decisions by what you knew *then*",
-];
-
 /** A road that splits: the lived path stays drawn and warm, the imagined one is dashed and fades into fog. */
 const Crossroads: React.FC = () => {
   const frame = useCurrentFrame();
+  const t = useText().theme1;
   const d = (from: number, to: number) => interpolate(frame, [from, to], [1, 0], { ...clamp, easing: Easing.inOut(Easing.ease) });
   const fog = Math.sin(frame / 50);
   return (
@@ -470,28 +436,31 @@ const Crossroads: React.FC = () => {
         opacity={interpolate(frame, [70, 140], [0, 1], clamp)} />
       <ellipse cx={680 + fog * 20} cy={110} rx={210} ry={120} fill="url(#fog)" opacity={interpolate(frame, [90, 160], [0, 1], clamp)} />
       <ellipse cx={620 - fog * 26} cy={210} rx={170} ry={90} fill="url(#fog)" opacity={interpolate(frame, [110, 180], [0, 0.8], clamp)} />
-      <text x={90} y={40} fontFamily={serif} fontStyle="italic" fontSize={34} fill={C.gold} opacity={interpolate(frame, [120, 150], [0, 1], clamp)}>the life you live</text>
-      <text x={500} y={540} fontFamily={serif} fontStyle="italic" fontSize={34} fill={C.dim} opacity={interpolate(frame, [150, 180], [0, 1], clamp)}>the one you imagine</text>
+      <text x={90} y={40} fontFamily={serif} fontStyle="italic" fontSize={34} fill={C.gold} opacity={interpolate(frame, [120, 150], [0, 1], clamp)}>{t.lived}</text>
+      <text x={500} y={540} fontFamily={serif} fontStyle="italic" fontSize={34} fill={C.dim} opacity={interpolate(frame, [150, 180], [0, 1], clamp)}>{t.imagined}</text>
     </svg>
   );
 };
 
 export const Theme1: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const t = useText().theme1;
+  const CHECKLIST = t.checklist;
   const end = length("theme1");
-  const lesson = at("theme1", "The lesson:");
-  const lastCue = at("theme1", "You may never");
-  const quoteAt = at("theme1", "But imaginary");
+  const lesson = at("theme1", t.cues.lesson);
+  const lastCue = at("theme1", t.cues.last);
+  const quoteAt = at("theme1", t.cues.quote);
   const beats = [
-    { from: 0, node: <div style={italic}>We can't go back to a crossroads and try the other path.</div> },
-    { from: at("theme1", "When Teresa"), node: <div style={body}><Rich text="Tomás leaves Switzerland to follow Teresa back to occupied Prague. Right choice? **He can never know.**" boldColor={C.gold} /></div> },
-    { from: at("theme1", "The host tells"), node: <div style={body}>Host's anecdote: left radio (passion, little money) for a dot-com (lots of money) in 2000, and still daydreams about radio.</div> },
-    { from: quoteAt, node: <div style={quote}>“Imaginary lives never have to pay their bills.”</div> },
-    { from: Math.round((quoteAt + lesson) / 2) + 20, node: <div style={body}><Rich text="*Counterfactual thinking*: useful for learning, a trap when used to despise your real life." /></div> },
+    { from: 0, node: <div style={italic}>{t.opening}</div> },
+    { from: at("theme1", t.cues.teresa), node: <div style={body}><Rich text={t.teresa} boldColor={C.gold} /></div> },
+    { from: at("theme1", t.cues.host), node: <div style={body}>{t.host}</div> },
+    { from: quoteAt, node: <div style={quote}>{t.quote}</div> },
+    { from: Math.round((quoteAt + lesson) / 2) + 20, node: <div style={body}><Rich text={t.counterfactual} /></div> },
     {
       from: lesson, node: (
         <div>
-          <div style={{ fontFamily: sans, fontWeight: 600, fontSize: 30, letterSpacing: 5, textTransform: "uppercase", color: C.gold, marginBottom: 26 }}>Practical lesson</div>
+          <div style={{ fontFamily: sans, fontWeight: 600, fontSize: 30, letterSpacing: 5, textTransform: "uppercase", color: C.gold, marginBottom: 26 }}>{t.lessonTitle}</div>
           {CHECKLIST.map((item, i) => {
             const tick = lesson + 20 + (i * (lastCue - lesson)) / CHECKLIST.length;
             const t = interpolate(frame, [tick, tick + 14], [0, 1], clamp);
@@ -546,6 +515,7 @@ const Venn: React.FC = () => {
 /** A calendar flipping ten years while the person beside it stays the same. */
 const TenYears: React.FC<{ from: number; to: number }> = ({ from, to }) => {
   const frame = useCurrentFrame();
+  const t = useText().theme2;
   const per = Math.max(12, Math.floor((to - from - 40) / 10));
   const n = Math.min(10, Math.max(1, Math.floor((frame - from) / per) + 1));
   const flip = interpolate((frame - from) % per, [0, 10], [90, 0], clamp);
@@ -556,7 +526,7 @@ const TenYears: React.FC<{ from: number; to: number }> = ({ from, to }) => {
         <div style={{ height: 316, backgroundColor: C.paper, borderRadius: "0 0 14px 14px", transformOrigin: "50% 0%",
           transform: n < 10 || flip > 0 ? `rotateX(${flip}deg)` : undefined, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 150, lineHeight: 1, color: C.bg }}>{n}</div>
-          <div style={{ fontFamily: sans, fontSize: 30, color: C.inkDim, marginTop: 10 }}>{n === 1 ? "year" : "years"}</div>
+          <div style={{ fontFamily: sans, fontSize: 30, color: C.inkDim, marginTop: 10 }}>{t.years(n)}</div>
         </div>
       </div>
       <Figure color={C.blue} height={380} />
@@ -566,17 +536,19 @@ const TenYears: React.FC<{ from: number; to: number }> = ({ from, to }) => {
 
 export const Theme2: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const t = useText().theme2;
   const end = length("theme2");
-  const ask = at("theme2", "Ask yourself:");
+  const ask = at("theme2", t.cues.ask);
   const beats = [
-    { from: 0, node: <div style={body}>Teresa's childhood: a mother who mocked her modesty and didn't let her close the bathroom door. She escaped into books.</div> },
-    { from: at("theme2", "When she meets"), node: <div style={body}>She meets Tomás reading a book, a sign of the world she longed for.</div> },
-    { from: at("theme2", "But Tomás believes"), node: <div style={body}><Rich text="**Tomás:** sex ≠ love. **Teresa:** each infidelity denies her uniqueness." boldColor={C.gold} /></div> },
-    { from: at("theme2", "Don't divide"), node: <div style={body}><Rich text="*No hero, no villain.* Tomás loves and sacrifices yet keeps hurting her. Teresa bets her security on him becoming someone else." /></div> },
+    { from: 0, node: <div style={body}>{t.childhood}</div> },
+    { from: at("theme2", t.cues.meets), node: <div style={body}>{t.meets}</div> },
+    { from: at("theme2", t.cues.believes), node: <div style={body}><Rich text={t.views} boldColor={C.gold} /></div> },
+    { from: at("theme2", t.cues.divide), node: <div style={body}><Rich text={t.noVillain} /></div> },
     {
-      from: at("theme2", "The lesson is"), node: (
+      from: at("theme2", t.cues.lesson), node: (
         <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
-          {[["Broken agreement", "a problem of *trust*"], ["Different fundamental expectations", "a problem of *incompatibility*"]].map(([a, b]) => (
+          {t.problems.map(([a, b]) => (
             <div key={a} style={{ backgroundColor: C.card, border: `1px solid ${C.line}`, borderRadius: 14, padding: "26px 34px" }}>
               <div style={{ fontFamily: sans, fontWeight: 600, fontSize: 36, color: C.gold }}>{a}</div>
               <div style={{ fontFamily: sans, fontSize: 34, color: C.paper, marginTop: 8 }}>→ <Rich text={b} /></div>
@@ -585,7 +557,7 @@ export const Theme2: React.FC = () => {
         </div>
       ),
     },
-    { from: ask, node: <div style={{ ...quote, fontSize: 62 }}>“Could I live in peace with this person if, in 10 years, they were essentially the same as today?”</div> },
+    { from: ask, node: <div style={{ ...quote, fontSize: 62 }}>{t.question}</div> },
   ];
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
@@ -598,12 +570,10 @@ export const Theme2: React.FC = () => {
 
 // ---- 10 · theme3: a dictionary of misunderstood words ----------------------------------------------------
 
-const DEFINITIONS = ["dinner with friends once a week", "many sexual partners", "a room of one's own"];
-
 const Bubble: React.FC<{ color: string; tail: "left" | "right" }> = ({ color, tail }) => (
   <div style={{ position: "relative", backgroundColor: color, borderRadius: 40, padding: "26px 54px", fontFamily: serif, fontStyle: "italic",
     fontSize: 64, color: C.paper }}>
-    freedom
+    {useText().theme3.bubble}
     <div style={{ position: "absolute", bottom: -26, [tail]: 60, width: 0, height: 0, borderLeft: "22px solid transparent",
       borderRight: "22px solid transparent", borderTop: `30px solid ${color}` }} />
   </div>
@@ -611,11 +581,13 @@ const Bubble: React.FC<{ color: string; tail: "left" | "right" }> = ({ color, ta
 
 export const Theme3: React.FC = () => {
   const frame = useCurrentFrame();
-  const end = length("theme3");
-  const split = at("theme3", "It happens");
-  const fix = at("theme3", "The fix");
-  const franz = at("theme3", "Franz leaves");
-  const love = at("theme3", "Love doesn't");
+  const at = useAt();
+  const t = useText().theme3;
+  const DEFINITIONS = t.definitions;
+  const split = at("theme3", t.cues.split);
+  const fix = at("theme3", t.cues.fix);
+  const franz = at("theme3", t.cues.franz);
+  const love = at("theme3", t.cues.love);
   const ink = C.bg;
   const entry: React.CSSProperties = { fontFamily: serif, fontSize: 46, lineHeight: 1.35, color: ink };
   return (
@@ -623,21 +595,21 @@ export const Theme3: React.FC = () => {
       {/* Dictionary page furniture */}
       <div style={{ position: "absolute", left: 120, right: 120, top: 70, display: "flex", justifyContent: "space-between", alignItems: "baseline",
         borderBottom: `2px solid ${ink}`, paddingBottom: 12, fontFamily: serif, color: ink }}>
-        <span style={{ fontStyle: "italic", fontSize: 34 }}>A short dictionary of misunderstood words</span>
-        <span style={{ fontFamily: sans, fontSize: 22, letterSpacing: 5, color: C.inkDim }}>FREEDOM · SABINA · FRANZ</span>
+        <span style={{ fontStyle: "italic", fontSize: 34 }}>{t.header}</span>
+        <span style={{ fontFamily: sans, fontSize: 22, letterSpacing: 5, color: C.inkDim }}>{t.headerRight}</span>
       </div>
 
       <div style={{ position: "absolute", left: 160, top: 210, width: 1600, opacity: fadeBetween(frame, 0, split, 16) }}>
-        <Beat from={10} style={entry}><Rich text="**Sabina** flees every constraint: art conventions, family, politics, commitment." /></Beat>
-        <Beat from={at("theme3", "In Switzerland")} style={{ ...entry, marginTop: 50 }}>
-          <Rich text={`**Franz** adores her. Kundera gives them a **“short dictionary of misunderstood words.”**`} />
+        <Beat from={10} style={entry}><Rich text={t.sabina} /></Beat>
+        <Beat from={at("theme3", t.cues.switzerland)} style={{ ...entry, marginTop: 50 }}>
+          <Rich text={t.franz} />
         </Beat>
       </div>
 
       {frame >= split && frame < fix ? (
         <div style={{ opacity: fadeBetween(frame, split, fix, 16) }}>
           <Beat from={split} style={{ position: "absolute", left: 150, top: 380, fontFamily: serif, fontWeight: 700, fontSize: 130, letterSpacing: 6, color: ink }}>
-            FREEDOM
+            {t.word}
           </Beat>
           <svg width={1920} height={1080} style={{ position: "absolute" }}>
             {DEFINITIONS.map((_, i) => {
@@ -661,7 +633,7 @@ export const Theme3: React.FC = () => {
           <Beat from={fix} style={{ position: "absolute", left: 420, top: 220 }}><Bubble color={C.red} tail="left" /></Beat>
           <Beat from={fix + 12} style={{ position: "absolute", left: 1080, top: 220 }}><Bubble color={C.blue} tail="right" /></Beat>
           <Beat from={fix + 30} style={{ position: "absolute", left: 160, top: 500, width: 1600, ...entry, textAlign: "center" }}>
-            <Rich text={`**Technique:** translate big words into concrete behaviors (respect? commitment? “sharing a life”?).`} />
+            <Rich text={t.technique} />
           </Beat>
         </div>
       ) : null}
@@ -669,11 +641,11 @@ export const Theme3: React.FC = () => {
       {frame >= franz ? (
         <>
           <Beat from={franz} style={{ position: "absolute", left: 160, top: 260, width: 1600, ...entry, textAlign: "center" }}>
-            Franz leaves his wife as the ultimate romantic gesture; Sabina sees a door closing and leaves.
+            {t.leaves}
           </Beat>
           <Beat from={love} style={{ position: "absolute", left: 160, top: 520, width: 1600, textAlign: "center", fontFamily: serif, fontWeight: 700,
             fontSize: 92, color: C.red }}>
-            “Love doesn't grant telepathy.”
+            {t.telepathy}
           </Beat>
         </>
       ) : null}
@@ -719,10 +691,11 @@ const Advert: React.FC = () => (
 /** Grey clutter around the frame, in screen positions at the final zoom (0.4). */
 const CLUTTER: [number, number][] = [[520, 850], [760, 870], [1180, 870], [1430, 840], [1480, 330], [1760, 320], [140, 560], [1800, 760]];
 
+/** Labels come from text.ts (theme4.outside), in this order. */
 const OUTSIDE = [
-  { label: "the mortgage", x: -615, y: 170, kind: "papers" },
-  { label: "the sick grandmother", x: -615, y: 930, kind: "bed" },
-  { label: "the sexless marriage", x: 2535, y: 540, kind: "pillows" },
+  { x: -615, y: 170, kind: "papers" },
+  { x: -615, y: 930, kind: "bed" },
+  { x: 2535, y: 540, kind: "pillows" },
 ];
 
 const Outside: React.FC<{ kind: string }> = ({ kind }) => {
@@ -765,23 +738,24 @@ const Heart: React.FC<{ size: number }> = ({ size }) => (
 
 export const Theme4: React.FC = () => {
   const frame = useCurrentFrame();
-  const end = length("theme4");
-  const pull = at("theme4", "Now picture");
-  const kitsch = at("theme4", "Kitsch removes");
-  const second = at("theme4", "And there's a second");
-  const social = at("theme4", "Think of social");
-  const memory = at("theme4", "Our memory");
+  const at = useAt();
+  const t = useText().theme4;
+  const pull = at("theme4", t.cues.pull);
+  const kitsch = at("theme4", t.cues.kitsch);
+  const second = at("theme4", t.cues.second);
+  const social = at("theme4", t.cues.social);
+  const memory = at("theme4", t.cues.memory);
   const zoom = interpolate(frame, [pull, pull + 150], [1, 0.4], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const outside = interpolate(frame, [pull + 40, pull + 140], [0, 1], clamp);
   const phone = interpolate(frame, [social, social + 30], [0, 1], { ...clamp, easing: Easing.inOut(Easing.ease) });
   const dim = interpolate(frame, [memory, memory + 24], [1, 0.07], clamp);
   const top: React.CSSProperties = { left: 160, top: 70, width: 1600, height: 220, textAlign: "center", alignItems: "center" };
   const beats = [
-    { from: 0, node: <div style={{ ...italic, color: "#3a2410", textShadow: "0 0 30px rgba(255,240,200,0.8)" }}>A perfect family breakfast in golden light, the ad image.</div> },
-    { from: pull + 30, node: <div style={{ ...body, fontSize: 40 }}>Pull back to reveal what's cut out: the mortgage, the sexless marriage, the sick grandmother.</div> },
-    { from: kitsch, node: <div style={{ ...quote, fontSize: 70 }}>Kitsch = removing everything that spoils the image.</div> },
-    { from: second, node: <div style={{ ...body, fontSize: 40 }}><Rich text="The second-level emotion: being moved *that everyone is moved*, and so feeling morally superior." /></div> },
-    { from: social, node: <div style={{ ...body, fontSize: 40 }}>Social media: a perfect photo needs more perfect photos; life serves the image; happiness becomes a staged obligation.</div> },
+    { from: 0, node: <div style={{ ...italic, color: "#3a2410", textShadow: "0 0 30px rgba(255,240,200,0.8)" }}>{t.advert}</div> },
+    { from: pull + 30, node: <div style={{ ...body, fontSize: 40 }}>{t.pull}</div> },
+    { from: kitsch, node: <div style={{ ...quote, fontSize: 70 }}>{t.kitsch}</div> },
+    { from: second, node: <div style={{ ...body, fontSize: 40 }}><Rich text={t.second} /></div> },
+    { from: social, node: <div style={{ ...body, fontSize: 40 }}>{t.social}</div> },
   ];
   return (
     <AbsoluteFill style={{ backgroundColor: "#2e2b28" }}>
@@ -793,10 +767,10 @@ export const Theme4: React.FC = () => {
               width: 220 + (i % 3) * 60, height: 120 + (i % 2) * 40, border: "6px solid #57524d", transform: `rotate(${(i * 37) % 50 - 25}deg)`,
               opacity: outside * 0.7 }} />
           ))}
-          {OUTSIDE.map((o) => (
-            <div key={o.label} style={{ position: "absolute", left: o.x - 450, top: o.y - 260, width: 900, opacity: outside, textAlign: "center" }}>
+          {OUTSIDE.map((o, i) => (
+            <div key={o.kind} style={{ position: "absolute", left: o.x - 450, top: o.y - 260, width: 900, opacity: outside, textAlign: "center" }}>
               <Outside kind={o.kind} />
-              <div style={{ fontFamily: serif, fontStyle: "italic", fontSize: 72, color: "#c9c2b9", marginTop: 6 }}>{o.label}</div>
+              <div style={{ fontFamily: serif, fontStyle: "italic", fontSize: 72, color: "#c9c2b9", marginTop: 6 }}>{t.outside[i]}</div>
             </div>
           ))}
           {/* Phone body appears around the frame for social media */}
@@ -819,18 +793,14 @@ export const Theme4: React.FC = () => {
         {phone > 0 ? (
           <div style={{ position: "absolute", left: 1400, top: 780, display: "flex", alignItems: "center", gap: 10, opacity: phone, fontFamily: sans,
             fontWeight: 600, fontSize: 30, color: C.paper }}>
-            <Heart size={30} /> {Math.round(interpolate(frame, [social + 20, memory], [128, 9840], clamp)).toLocaleString("en-US")}
+            <Heart size={30} /> {Math.round(interpolate(frame, [social + 20, memory], [128, 9840], clamp)).toLocaleString(t.locale)}
           </div>
         ) : null}
       </AbsoluteFill>
       <Sequenced beats={beats} end={memory} style={top} />
       {frame >= memory ? (
         <div style={{ position: "absolute", left: 210, top: 170, width: 1500 }}>
-          {[
-            "Can I admit my parents were wrong and still love them?",
-            "Can a relationship have been wonderful *and* miserable?",
-            "Can I admit I was petty, ridiculous, or cowardly, without inventing a heroic excuse?",
-          ].map((q, i) => (
+          {t.questions.map((q, i) => (
             <Beat key={q} from={memory + 10 + i * 40} style={{ fontFamily: serif, fontSize: 54, lineHeight: 1.3, color: C.paper, marginBottom: 46,
               paddingLeft: 30, borderLeft: `5px solid ${C.gold}` }}>
               <Rich text={q} />
@@ -887,24 +857,26 @@ const DoorWaiting: React.FC = () => (
 
 export const Theme5: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const t = useText().theme5;
   const end = length("theme5");
-  const ask = at("theme5", "So ask:");
+  const ask = at("theme5", t.cues.ask);
   const warm = interpolate(frame, [0, 300], [0, 1], clamp);
-  const answers = ["a person", "a dog", "a project", "a garden", "a conversation"];
+  const answers = t.answers;
   const waiting = Math.min(end - 120, ask + 170);
   const beats = [
-    { from: 0, node: <div style={body}><Rich text="Tomás refuses to retract a critical article → loses medicine → becomes a **window cleaner**." boldColor={C.gold} /></div> },
-    { from: at("theme5", "And something surprising"), node: <div style={body}><Rich text="The man who guarded his freedom finds **serenity in routine and commitment**." boldColor={C.gold} /></div> },
-    { from: at("theme5", "Teresa realizes"), node: <div style={body}>Teresa sees the price he paid: love can also produce guilt.</div> },
-    { from: at("theme5", "Then there's Karenin"), node: <div style={body}><Rich text="**Karenin**: affection made of habit and small rituals. Dogs love repetition; humans despise it." boldColor={C.gold} /></div> },
-    { from: at("theme5", "while most"), node: <div style={body}>Not a praise of poverty: the losses are political and real.</div> },
+    { from: 0, node: <div style={body}><Rich text={t.windows} boldColor={C.gold} /></div> },
+    { from: at("theme5", t.cues.surprising), node: <div style={body}><Rich text={t.serenity} boldColor={C.gold} /></div> },
+    { from: at("theme5", t.cues.realizes), node: <div style={body}>{t.price}</div> },
+    { from: at("theme5", t.cues.karenin), node: <div style={body}><Rich text={t.karenin} boldColor={C.gold} /></div> },
+    { from: at("theme5", t.cues.most), node: <div style={body}>{t.poverty}</div> },
     {
-      from: at("theme5", "The novel separates"), node: (
+      from: at("theme5", t.cues.separates), node: (
         <div style={{ display: "flex", gap: 26 }}>
-          {["What we have achieved", "what we are able to enjoy"].map((t, i) => (
-            <div key={t} style={{ flex: 1, backgroundColor: i ? "rgba(201,162,74,0.16)" : C.card, border: `1px solid ${i ? C.gold : C.line}`,
+          {t.compare.map((label, i) => (
+            <div key={label} style={{ flex: 1, backgroundColor: i ? "rgba(201,162,74,0.16)" : C.card, border: `1px solid ${i ? C.gold : C.line}`,
               borderRadius: 14, padding: "40px 30px", fontFamily: serif, fontSize: 48, lineHeight: 1.2, color: i ? C.gold : C.dim, textAlign: "center" }}>
-              {t}
+              {label}
             </div>
           ))}
         </div>
@@ -914,7 +886,7 @@ export const Theme5: React.FC = () => {
       from: ask, node: (
         <div>
           <div style={{ fontFamily: serif, fontWeight: 700, fontSize: 48, lineHeight: 1.22, color: C.paper }}>
-            “If everything you use to prove your life matters vanished tomorrow, what would still be worth getting up for?”
+            {t.question}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 0", marginTop: 30, fontFamily: sans, fontSize: 32, color: C.gold }}>
             {answers.map((a, i) => (
@@ -923,7 +895,7 @@ export const Theme5: React.FC = () => {
           </div>
           <div style={{ fontFamily: serif, fontStyle: "italic", fontSize: 36, lineHeight: 1.3, color: C.dim, marginTop: 40,
             opacity: interpolate(frame, [waiting, waiting + 20], [0, 1], clamp) }}>
-            A life spent chasing the next goal turns the present into a waiting room.
+            {t.waiting}
           </div>
         </div>
       ),
@@ -943,6 +915,8 @@ export const Theme5: React.FC = () => {
 
 export const Finale: React.FC = () => {
   const frame = useCurrentFrame();
+  const at = useAt();
+  const t = useText().finale;
   const end = length("finale");
   const angle = frame * 0.02;
   const cx = 560;
@@ -956,8 +930,8 @@ export const Finale: React.FC = () => {
   const fx = 820 + Math.sin(frame / 22) * 60 * (1 - fall);
   const frot = Math.sin(frame / 28) * 24 * (1 - fall) + interpolate(frame, [500, 560], [0, 84], clamp);
   const groups = [
-    { from: 0, to: at("finale", "Next time") },
-    { from: at("finale", "Next time"), to: at("finale", "And if you") },
+    { from: 0, to: at("finale", t.cues.next) },
+    { from: at("finale", t.cues.next), to: at("finale", t.cues.ifYou) },
   ];
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
@@ -971,15 +945,15 @@ export const Finale: React.FC = () => {
       ))}
       <div style={{ position: "absolute", left: fx - 24, top: fy - 80, transform: `rotate(${frot}deg)` }}><Feather size={160} /></div>
       <div style={{ position: "absolute", left: 1040, top: 150, width: 800 }}>
-        <Beat from={groups[0].from + 10} to={groups[0].to} style={{ ...italic, fontSize: 50, marginBottom: 20 }}>The novel opens with the problem of a single life…</Beat>
-        <Beat from={at("finale", "he leaves us")} to={groups[0].to} style={{ ...italic, fontSize: 50, marginBottom: 50 }}>…and ends with two people dancing in a room.</Beat>
-        <Beat from={at("finale", "They could have")} to={groups[0].to} style={{ ...quote, fontSize: 60 }}>“They could have had other lives. But they are dancing.”</Beat>
+        <Beat from={groups[0].from + 10} to={groups[0].to} style={{ ...italic, fontSize: 50, marginBottom: 20 }}>{t.opens}</Beat>
+        <Beat from={at("finale", t.cues.leaves)} to={groups[0].to} style={{ ...italic, fontSize: 50, marginBottom: 50 }}>{t.ends}</Beat>
+        <Beat from={at("finale", t.cues.could)} to={groups[0].to} style={{ ...quote, fontSize: 60 }}>{t.could}</Beat>
       </div>
       <Beat from={groups[1].from} to={groups[1].to} style={{ position: "absolute", left: 1040, top: 300, width: 800, ...italic, fontSize: 60 }}>
-        Happiness doesn't need to last forever to have been real.
+        {t.real}
       </Beat>
       <Beat from={groups[1].to} style={{ position: "absolute", left: 1040, top: 250, width: 820, ...quote, fontSize: 92, color: C.gold }}>
-        “If you have someone to dance with, dance.”
+        {t.dance}
       </Beat>
     </AbsoluteFill>
   );
@@ -987,16 +961,20 @@ export const Finale: React.FC = () => {
 
 // ---- 14 · outro -------------------------------------------------------------------------------------------
 
-export const Outro: React.FC<{ music: string }> = ({ music }) => (
+export const Outro: React.FC = () => {
+  const lang = useLang();
+  const ui = UI[lang];
+  return (
   <AbsoluteFill style={{ backgroundColor: C.bg, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-    <Beat from={0} style={{ fontFamily: serif, fontStyle: "italic", fontSize: 76, color: C.paper }}>{META.name}</Beat>
+    <Beat from={0} style={{ fontFamily: serif, fontStyle: "italic", fontSize: 76, color: C.paper }}>{META.name[lang]}</Beat>
     <Beat from={10} style={{ fontFamily: serif, fontSize: 44, color: C.gold, marginTop: 12 }}>{`${META.author} (${META.year})`}</Beat>
     <Beat from={30} style={{ fontFamily: sans, fontSize: 28, color: C.dim, marginTop: 70, lineHeight: 1.6 }}>
-      Based on the analysis by <em style={{ fontFamily: serif }}>{META.source.channel}</em> ({META.source.host})
+      {ui.basedOn} <em style={{ fontFamily: serif }}>{META.source.channel}</em> ({META.source.host})
       <br />youtube.com/watch?v=p-OaSA0n3cY
     </Beat>
     <Beat from={50} style={{ fontFamily: sans, fontSize: 22, color: C.dim, marginTop: 40, maxWidth: 1300, lineHeight: 1.6 }}>
-      {music} Made with Remotion.
+      {ui.musicCredit(lang)} {ui.madeWith}
     </Beat>
   </AbsoluteFill>
-);
+  );
+};

@@ -24,3 +24,12 @@ section h2 { font: 600 30px "Cormorant Garamond", serif; margin: 0 0 10px; }
 footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
 .credits-line { font-size: 14px; color: var(--muted); margin: 0 0 28px; }
 .credits-line a { color: inherit; }
+header { position: relative; }
+.lang-switch { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 4px; font: 500 13px Inter, sans-serif;
+  letter-spacing: .12em; color: var(--muted); }
+.lang-switch button { font: inherit; letter-spacing: inherit; background: none; border: 0; padding: 4px 6px; cursor: pointer; color: var(--muted);
+  border-radius: 4px; }
+.lang-switch button.active { color: var(--text); text-decoration: underline; text-decoration-color: var(--sun); text-underline-offset: 5px;
+  text-decoration-thickness: 2px; }
+.lang-switch button:hover { color: var(--text); }
+header .eyebrow { padding-right: 96px; } /* room for the language switch */
