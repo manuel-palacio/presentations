@@ -1,0 +1,4 @@
+# Only the assembled site and the nginx config go into the image.
+*
+!_site
+!nginx.conf

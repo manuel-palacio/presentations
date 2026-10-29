@@ -6,6 +6,11 @@ import { FPS, MUSIC, SLIDES, TOTAL_FRAMES, slideStarts } from "../src/slides";
 import credits from "../public/img/credits.json";
 import "./style.css";
 
+// staticFile() resolves to /img/..., /audio/... from the site root; serve them from this page's own folder
+// instead, so the presentation works at the root or under a subpath (/sorolla/) of the shared site.
+(window as unknown as { remotion_staticBase: string }).remotion_staticBase = new URL(".", window.location.href)
+  .pathname.replace(/\/$/, "");
+
 const STARTS = slideStarts();
 
 const App: React.FC = () => {
