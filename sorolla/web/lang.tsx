@@ -49,3 +49,10 @@ export const LangSwitch: React.FC<{ lang: Lang; onChange: (lang: Lang) => void }
     ))}
   </div>
 );
+
+/** Back to the home page with all presentations, in the same language. */
+export const HomeLink: React.FC<{ lang: Lang }> = ({ lang }) => (
+  <a className="home-link" href={`../?lang=${lang}`}>
+    ← {lang === "es" ? "Presentaciones" : "Presentations"}
+  </a>
+);

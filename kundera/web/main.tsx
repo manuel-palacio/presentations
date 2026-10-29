@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Player, PlayerRef } from "@remotion/player";
 import { Presentation } from "../src/Presentation";
 import { FPS, Lang, META, MUSIC, SCENES, TOTAL_FRAMES, UI, sceneStarts, tr } from "../src/slides";
-import { LangSwitch, chooseLang, initialLang, showLang } from "./lang";
+import { HomeLink, LangSwitch, chooseLang, initialLang, showLang } from "./lang";
 import "./style.css";
 
 // staticFile() resolves to /audio/... from the site root; serve it from this page's own folder
@@ -42,6 +42,7 @@ const App: React.FC = () => {
     <main>
       <header>
         <LangSwitch lang={lang} onChange={switchTo} />
+        <HomeLink lang={lang} />
         <div className="eyebrow">{t(META.eyebrow)}</div>
         <h1>{t(META.name)}</h1>
         <p className="subtitle">{t(META.tagline)}</p>

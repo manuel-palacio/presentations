@@ -4,7 +4,7 @@ import { Player, PlayerRef } from "@remotion/player";
 import { Presentation } from "../src/Presentation";
 import { FPS, Lang, META, MUSIC, SLIDES, TOTAL_FRAMES, UI, slideStarts, tr } from "../src/slides";
 import credits from "../public/img/credits.json";
-import { LangSwitch, chooseLang, initialLang, showLang } from "./lang";
+import { HomeLink, LangSwitch, chooseLang, initialLang, showLang } from "./lang";
 import "./style.css";
 
 // staticFile() resolves to /img/..., /audio/... from the site root; serve them from this page's own folder
@@ -43,6 +43,7 @@ const App: React.FC = () => {
     <main>
       <header>
         <LangSwitch lang={lang} onChange={switchTo} />
+        <HomeLink lang={lang} />
         <div className="eyebrow">{t(META.places)}</div>
         <h1>{META.name}</h1>
         <p className="subtitle">{t(META.tagline)}</p>

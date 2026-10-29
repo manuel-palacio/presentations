@@ -23,6 +23,8 @@ is the authority on content: use its text, do not invent facts. Keep a copy as `
 - Link previews: crawlers don't run JavaScript, so `share_meta.py` (run by `build-site.sh`) writes each page twice,
   `index.html` (English) and `index.es.html` (Spanish), with title, description, Open Graph/Twitter tags and an absolute
   poster URL; nginx serves the Spanish one for `?lang=es`. A new presentation needs its texts in `share.json`.
+- Every presentation page starts with a "← Presentations / ← Presentaciones" link back to the home page in the current
+  language (`HomeLink` in `web/lang.tsx`, a file kept identical in every project).
 - Page headers show the title and tagline only: never the duration ("a 6 min 50 s presentation"), in any language.
 - No voiceover: narration is shown as timed subtitles. Music is public domain or CC from Wikimedia Commons, verified on
   its file page and credited in `MUSIC` and on the page.
