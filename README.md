@@ -13,7 +13,9 @@ works on its own at a site root.
 
 ## Deploying
 
-`./build-site.sh` builds every presentation and assembles `_site/`; the root `Dockerfile` serves it with
+Live at https://palace-presentations.fly.dev/ (Fly.io app `palace-presentations`, the only one; the old
+per-presentation apps were deleted on 2026-10-29). `./build-site.sh` builds every presentation and
+assembles `_site/`; the root `Dockerfile` serves it with
 nginx (`nginx.conf`). Then `fly deploy --ha=false --remote-only` from the repo root.
 
 ## Adding a presentation

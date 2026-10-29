@@ -1,5 +1,5 @@
-# Static site on Fly.io: nginx serving the Remotion player page and the rendered MP4.
-app = "velazquez-painter-of-painters"
+# One static site for all presentations (see build-site.sh): nginx, home page at /, each presentation at /<folder>/.
+app = "palace-presentations"
 primary_region = "arn"
 
 [build]
