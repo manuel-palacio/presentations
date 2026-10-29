@@ -5,7 +5,7 @@ An animated presentation about the Spanish painter Joaquín Sorolla (1863–1923
 
 - `src/slides.ts`: slide content and timing (shared by the video and the web page)
 - `src/Presentation.tsx`: the Remotion composition (10 slides + credits, 1920×1080, 30 fps)
-- `web/`: the page with the interactive Remotion Player, chapter buttons and MP4 download
+- `web/`: the page with the interactive Remotion Playerand chapter buttons (the MP4 is rendered to out/ but not published)
 - `public/img/`: paintings from Wikimedia Commons (public domain or CC0), credits in `credits.json`
 
 ```sh

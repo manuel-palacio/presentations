@@ -49,7 +49,6 @@ const App: React.FC = () => {
         ))}
       </nav>
       <div className="actions">
-        <a href="sorolla.mp4" download>Download the video (MP4, 1080p)</a>
         <a href="https://en.wikipedia.org/wiki/Joaqu%C3%ADn_Sorolla" target="_blank" rel="noreferrer">Read more on Wikipedia</a>
       </div>
       <section>

@@ -9,7 +9,7 @@
     "render": "remotion render src/index.ts Presentation out/presentation.mp4",
     "still": "remotion still src/index.ts Presentation out/poster.jpg --frame=60",
     "dev": "vite",
-    "build": "vite build && mkdir -p dist && cp out/presentation.mp4 out/poster.jpg dist/",
+    "build": "vite build && mkdir -p dist && cp out/poster.jpg dist/",
     "preview": "vite preview"
   },
   "dependencies": {
