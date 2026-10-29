@@ -1,0 +1,23 @@
+# Working in this repo
+
+Animated presentations made with Remotion, one per folder (`sorolla/`, `velazquez/`, `kundera/`), all served by
+one Fly.io app, `palace-presentations` (https://palace-presentations.fly.dev/): a home page at `/`
+(`home/index.html`) and each presentation at `/<folder>/`. README.md explains building, deploying and adding one.
+
+## Where new presentations come from
+
+**Always look in the Google Drive folder `presentations` for scripts and information about new presentations**
+(folder ID `1gbZ4H_uXOH2RzbZ1ovvxYZy0dSkzW-6B`, https://drive.google.com/drive/folders/1gbZ4H_uXOH2RzbZ1ovvxYZy0dSkzW-6B).
+Search it with the Google Drive connector, e.g. `search_files` with `parentId = '1gbZ4H_uXOH2RzbZ1ovvxYZy0dSkzW-6B'`,
+and read files with `read_file_content`. It holds, per subject, a summary of the source (often a YouTube video) and a
+"presentation source (Remotion)" script with scenes, on-screen text, narration, visual direction and timings. The script
+is the authority on content: use its text, do not invent facts. Keep a copy as `<folder>/SOURCE.md`.
+
+## Conventions
+
+- Copy the structure of an existing folder (`kundera/` for script-driven scenes, `velazquez/` for painting slides).
+- No voiceover: narration is shown as timed subtitles. Music is public domain or CC from Wikimedia Commons, verified on
+  its file page and credited in `MUSIC` and on the page.
+- No video download: `npm run build` publishes the web player, assets and poster only; the MP4 stays in `out/`.
+- Each web page sets `window.remotion_staticBase` from its own folder so assets load under `/<folder>/`.
+- Deploy from the repo root: `./build-site.sh && fly deploy --ha=false --remote-only`, then check the live pages.
