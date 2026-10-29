@@ -10,6 +10,7 @@ works on its own at a site root.
 |---|---|---|
 | [`sorolla/`](sorolla/) | Joaquín Sorolla, the painter of light (1863–1923) | `/sorolla/` |
 | [`velazquez/`](velazquez/) | Diego Velázquez, the painter of painters (1599–1660) | `/velazquez/` |
+| [`kundera/`](kundera/) | Milan Kundera, *The Unbearable Lightness of Being* (1984) | `/kundera/` |
 
 ## Deploying
 

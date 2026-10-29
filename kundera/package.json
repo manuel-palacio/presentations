@@ -1,0 +1,29 @@
+{
+  "name": "kundera-presentation",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Milan Kundera, The Unbearable Lightness of Being: an animated presentation made with Remotion",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Presentation out/presentation.mp4",
+    "still": "remotion still src/index.ts Presentation out/poster.jpg --frame=338",
+    "dev": "vite",
+    "build": "vite build && mkdir -p dist && cp out/poster.jpg dist/",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@remotion/google-fonts": "4.0.536",
+    "@remotion/player": "4.0.536",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.536"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.536",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.4"
+  }
+}
