@@ -16,6 +16,10 @@
     "kundera": {
       "en": { "title": "The Unbearable Lightness of Being · Milan Kundera", "description": "An animated presentation about Milan Kundera's novel The Unbearable Lightness of Being (1984)." },
       "es": { "title": "La insoportable levedad del ser · Milan Kundera", "description": "Una presentación animada sobre la novela de Milan Kundera La insoportable levedad del ser (1984)." }
+    },
+    "vo2max": {
+      "en": { "title": "VO₂ max and ageing · Train it back", "description": "An animated presentation on why VO₂ max declines with age, and a concrete interval-training week to counter it." },
+      "es": { "title": "El VO₂ máx y la edad · Recupéralo entrenando", "description": "Una presentación animada sobre por qué el VO₂ máx cae con la edad y una semana concreta de entrenamiento por intervalos para contrarrestarlo." }
     }
   }
 }

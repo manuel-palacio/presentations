@@ -18,6 +18,7 @@ have an `EN | ES` switch; the first language comes from `?lang=`, else the saved
 | [`sorolla/`](sorolla/) | Joaquín Sorolla, the painter of light (1863–1923) | `/sorolla/` |
 | [`velazquez/`](velazquez/) | Diego Velázquez, the painter of painters (1599–1660) | `/velazquez/` |
 | [`kundera/`](kundera/) | Milan Kundera, *The Unbearable Lightness of Being* (1984) | `/kundera/` |
+| [`vo2max/`](vo2max/) | Healthspan, *Why VO₂ max declines with age*, plus an interval-training plan (2026) | `/vo2max/` |
 
 ## Deploying
 
