@@ -15,19 +15,35 @@ const CONTENT: Record<string, React.FC> = {
   progression: Progression, finale: Finale, outro: Outro,
 };
 
-/** The scene's content, faded in and out, with its narration as subtitles on top. */
+/** The scene's content under a slow camera push-in; it arrives out of a soft zoom-blur and leaves into one.
+ *  The narration's subtitles stay steady on top. */
 const SceneContent: React.FC<{ scene: Scene }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const lang = useLang();
   const { durationInFrames } = useVideoConfig();
-  const opacity = Math.min(interpolate(frame, [0, FADE], [0, 1], clamp), interpolate(frame, [durationInFrames - FADE, durationInFrames], [1, 0], clamp));
+  const ease = (x: number) => 1 - (1 - x) ** 3;
+  const inP = interpolate(frame, [0, FADE + 6], [0, 1], { ...clamp, easing: ease });
+  const outP = interpolate(frame, [durationInFrames - FADE, durationInFrames], [0, 1], { ...clamp, easing: (x) => x * x });
+  const push = interpolate(frame, [0, durationInFrames], [1, 1.035], clamp);
+  const scale = push * (1 + 0.05 * (1 - inP)) * (1 - 0.04 * outP);
+  const blur = 12 * (1 - inP) + 10 * outP;
   const Content = CONTENT[scene.id];
   return (
-    <AbsoluteFill style={{ opacity }}>
-      <Content />
-      <Subtitles subs={subtitles(scene, lang)} />
+    <AbsoluteFill>
+      <AbsoluteFill style={{ opacity: Math.min(inP, 1 - outP), transform: `scale(${scale})`, filter: blur > 0.2 ? `blur(${blur}px)` : undefined }}>
+        <Content />
+      </AbsoluteFill>
+      <AbsoluteFill style={{ opacity: Math.min(inP, 1 - outP) }}>
+        <Subtitles subs={subtitles(scene, lang)} />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
+};
+
+/** The backdrop's colour drifts from oxygen blue (part I) to training green (part II). */
+const LivingBackdrop: React.FC = () => {
+  const frame = useCurrentFrame();
+  return <Backdrop accent={interpolate(frame, [PART2 - 60, PART2 + 60], [0, 1], clamp)} />;
 };
 
 const STARTS = sceneStarts();
@@ -50,7 +66,7 @@ const Divider: React.FC<{ scene: Scene }> = ({ scene }) => {
 export const Presentation: React.FC<PresentationProps> = ({ lang = "en" }) => (
   <LangContext.Provider value={lang}>
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
-      <Backdrop />
+      <LivingBackdrop />
       <Sequence durationInFrames={PART2 + XFADE} name="music I">
         <Audio src={staticFile(MUSIC[0].src)} volume={firstVolume} />
       </Sequence>
